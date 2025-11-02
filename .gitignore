@@ -1,0 +1,89 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+venv/
+env/
+ENV/
+*.env
+*.venv
+
+# Archivos de configuración local
+*.sqlite3
+*.log
+*.pot
+*.pyc
+*.pyo
+*.db
+*.swp
+*.swo
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de compilación
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Archivos de migración innecesarios
+*/migrations/__pycache__/
+*/migrations/*.pyc
+
+# Archivos de IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos de pruebas
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Archivos de Django específicos
+staticfiles/
+media/
+local_settings.py
+settings_local.py
+
+# Archivos de Docker y otros entornos
+*.pid
+*.bak
+*.tmp
+*.orig
+*.rej
+
+# Archivos de frontend (si usas npm/yarn)
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Archivos de compilación de frontend
+*.map
+*.lock
+*.min.js
+*.min.css
