@@ -7,16 +7,16 @@
         <h1 >Nuevo Empleado</h1>
         <form action="guardarPersona" method="post">
             {% csrf_token %}
-
-             <label for="identificacion" >Identification number</label><br>
-            <input class="form-control" type="text" name="identificacion" id="identificacion" required><br>
             
             <label for="nombres" >Names </label><br>
             <input class="form-control" type="text" name="nombres" id="nombres" required><br>
 
             <label for="apellidos" >Last Names </label><br>
             <input class="form-control" type="text" name="apellidos" id="apellidos" required><br>
-
+             
+            <label for="identificacion" >Identification number</label><br>
+            <input class="form-control" type="text" name="identificacion" id="identificacion" required><br>
+            
             <label for="fecha_nacimiento" >Born Date </label><br>
             <input class="form-control" type="date" name="fecha_nacimiento" id="fecha_nacimiento" required><br>
 
