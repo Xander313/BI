@@ -56,8 +56,8 @@
                     <a href="{% url 'editPet' mascotaTemporal.id %}" class="btn btn-outline-warning">
                         <i class="fa fa-pen"></i>
                     </a>
-                    <a href="#" class="btn btn-outline-danger"
-                        onclick="confirmarEliminacion('{{ mascotaTemporal.id }}')">
+                    <a href="#" class="btn btn-outline-danger" onclick="confirmarEliminacion('{{mascotaTemporal.id}}')">
+
                         <i class="fa fa-trash"></i>
                     </a>
                     <script>
@@ -73,7 +73,7 @@
                                 cancelButtonText: 'Cancelar'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    window.location.href = `eliminarMascota/${id}`;
+                                    window.location.href = 'deleteMascota/' + id;
                                 }
                             });
                         }

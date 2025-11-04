@@ -1,4 +1,8 @@
+import os
+
+from django.conf import settings
 from django.contrib import messages
+from django.db.models.deletion import ProtectedError
 from django.shortcuts import get_object_or_404, redirect, render
 
 from Aplicaciones.Especie.models import Especie
@@ -120,6 +124,10 @@ def updateMascota(request, mascota_id):
 
         nueva_foto = request.FILES.get("foto_perfil")
         if nueva_foto:
+            if mascota.foto_perfil:
+                ruta_anterior = mascota.foto_perfil.path
+                if os.path.exists(ruta_anterior):
+                    os.remove(ruta_anterior)
             mascota.foto_perfil = nueva_foto
 
         mascota.especie = Especie.objects.get(id=especie_id)
@@ -127,5 +135,25 @@ def updateMascota(request, mascota_id):
 
         mascota.save()
         messages.success(request, "Pet updated successfully")
+
+    return redirect("indexMascota")
+
+
+def deleteMascota(request, mascota_id):
+    mascota = get_object_or_404(Mascota, id=mascota_id)
+
+    try:
+        mascota.delete()
+        messages.success(request, "Pet deleted successfully")
+    except ProtectedError:
+        messages.error(
+            request,
+            "Cannot delete this pet while related records exist. Remove those references first.",
+        )
+    else:
+        if mascota.foto_perfil:
+            ruta_foto = mascota.foto_perfil.path
+            if os.path.exists(ruta_foto):
+                os.remove(ruta_foto)
 
     return redirect("indexMascota")
