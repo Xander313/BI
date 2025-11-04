@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark text-center">
+                    <h2 class="mb-0">Edit Pet</h2>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'updateMascota' mascota.id %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label" for="nombre">Name</label>
+                            <input class="form-control" type="text" name="nombre" id="nombre"
+                                value="{{ mascota.nombre }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="especie">Species</label>
+                            <select class="form-select" name="especie" id="especie" required>
+                                <option value="" disabled {% if not mascota.especie_id %}selected{% endif %}>
+                                    Select a species
+                                </option>
+                                {% for especie in especies %}
+                                <option value="{{ especie.id }}" {% if especie.id==mascota.especie_id %}selected{% endif
+                                    %}>
+                                    {{ especie.nombre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+
+
+                        <div class="mb-3">
+                            <label class="form-label" for="raza">Breed</label>
+                            <select class="form-select" name="raza" id="raza">
+                                <option value="" {% if not mascota.raza_id %}selected{% endif %}>Not specified</option>
+                                {% for raza in razas %}
+                                <option value="{{ raza.id }}" {% if raza.id==mascota.raza_id %}selected{% endif %}>
+                                    {{ raza.nombre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="sexo">Sex</label>
+                            <select class="form-select" name="sexo" id="sexo" required>
+                                <option value="" disabled>Select sex</option>
+                                <option value="Male" {% if mascota.sexo=="Male" %}selected{% endif %}>Male</option>
+                                <option value="Female" {% if mascota.sexo=="Female" %}selected{% endif %}>Female
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="fecha_nacimiento">Birth Date</label>
+                            <input class="form-control" type="date" name="fecha_nacimiento" id="fecha_nacimiento"
+                                value="{{ mascota.fecha_nacimiento|date:'Y-m-d' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="edad_aproximada">Approximate Age (years)</label>
+                            <input class="form-control" type="number" name="edad_aproximada" id="edad_aproximada"
+                                min="0" max="25" value="{{ mascota.edad_aproximada|default_if_none:'' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="peso_kg">Weight (kg)</label>
+                            <input class="form-control" type="number" name="peso_kg" id="peso_kg" min="0" step="0.1"
+                                value="{{ mascota.peso_kg|default_if_none:'' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="estado_salud">Health Status</label>
+                            <select class="form-select" name="estado_salud" id="estado_salud" required>
+                                <option value="" disabled>Select health status</option>
+                                <option value="Bad" {% if mascota.estado_salud=="Bad" %}selected{% endif %}>Bad</option>
+                                <option value="Medium" {% if mascota.estado_salud=="Medium" %}selected{% endif %}>Medium
+                                </option>
+                                <option value="Good" {% if mascota.estado_salud=="Good" %}selected{% endif %}>Good
+                                </option>
+                                <option value="Excellent" {% if mascota.estado_salud=="Excellent" %}selected{% endif %}>
+                                    Excellent</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="descripcion">Description</label>
+                            <textarea class="form-control" name="descripcion" id="descripcion"
+                                rows="4">{{ mascota.descripcion }}</textarea>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="vacunas_al_dia"
+                                        id="vacunas_al_dia" value="true" {% if mascota.vacunas_al_dia %}checked{% endif
+                                        %}>
+                                    <label class="form-check-label" for="vacunas_al_dia">Vaccines Updated</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="esterilizado"
+                                        id="esterilizado" value="true" {% if mascota.esterilizado %}checked{% endif %}>
+                                    <label class="form-check-label" for="esterilizado">Sterilized</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="fecha_ingreso">Shelter Entry Date</label>
+                            <input class="form-control" type="date" name="fecha_ingreso" id="fecha_ingreso"
+                                value="{{ mascota.fecha_ingreso|date:'Y-m-d' }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="ubicacion_refugio">Shelter Location</label>
+                            <input class="form-control" type="text" name="ubicacion_refugio" id="ubicacion_refugio"
+                                value="{{ mascota.ubicacion_refugio }}">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label" for="foto_perfil">Profile Photo</label>
+                            <input class="form-control" type="file" name="foto_perfil" id="foto_perfil"
+                                accept="image/*">
+                            {% if mascota.foto_perfil %}
+                            <div class="mt-2 text-center">
+                                <img src="{{ mascota.foto_perfil.url }}" alt="Current photo" class="img-thumbnail"
+                                    style="max-height: 200px;">
+                            </div>
+                            {% else %}
+                            <p>No hay imagen cargada.</p>
+                            {% endif %}
+
+
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-warning text-white" type="submit">Update</button>
+                                <a class="btn btn-outline-danger" href="{% url 'indexMascota' %}">Cancel</a>
+                            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="position-fixed bottom-0 start-0 ms-4 mb-4 d-flex flex-column gap-2">
+    <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#modalNuevaEspecie">
+        Add Species
+    </button>
+    <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalNuevaRaza">
+        Add Breed
+    </button>
+</div>
+
+<div class="modal fade" id="modalNuevaEspecie" tabindex="-1" aria-labelledby="modalNuevaEspecieLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalNuevaEspecieLabel">Register New Species</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'guardarEspecie' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <div class="mb-3">
+                        <label class="form-label" for="especie_nombre">Name</label>
+                        <input class="form-control" type="text" name="nombre" id="especie_nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="especie_nombre_cientifico">Scientific Name</label>
+                        <input class="form-control" type="text" name="nombre_cientifico" id="especie_nombre_cientifico">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="especie_descripcion_general">General Description</label>
+                        <textarea class="form-control" name="descripcion_general" id="especie_descripcion_general"
+                            rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="especie_cuidados_recomendados">Recommended Care</label>
+                        <textarea class="form-control" name="cuidados_recomendados" id="especie_cuidados_recomendados"
+                            rows="3"></textarea>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="activo" id="especie_activo" value="true"
+                            checked>
+                        <label class="form-check-label" for="especie_activo">Active</label>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                        <button class="btn btn-success" type="submit">Save Species</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNuevaRaza" tabindex="-1" aria-labelledby="modalNuevaRazaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalNuevaRazaLabel">Register New Breed</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'guardarRaza' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <div class="mb-3">
+                        <label class="form-label" for="raza_nombre">Name</label>
+                        <input class="form-control" type="text" name="nombre" id="raza_nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="raza_descripcion">Description</label>
+                        <textarea class="form-control" name="descripcion" id="raza_descripcion" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="raza_temperamento">Temperament</label>
+                        <input class="form-control" type="text" name="temperamento_predominante" id="raza_temperamento">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="raza_esperanza_vida">Average Lifespan (years)</label>
+                        <input class="form-control" type="number" name="esperanza_vida_media" id="raza_esperanza_vida"
+                            min="1" max="40">
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="activo" id="raza_activo" value="true"
+                            checked>
+                        <label class="form-check-label" for="raza_activo">Active</label>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                        <button class="btn btn-primary" type="submit">Save Breed</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

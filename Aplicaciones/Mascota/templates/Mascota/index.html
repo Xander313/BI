@@ -53,7 +53,7 @@
                 <td>{{ mascotaTemporal.fecha_ingreso }}</td>
                 <td>{{ mascotaTemporal.ubicacion_refugio|default:"-" }}</td>
                 <td class="text-center">
-                    <a href="editarMascota/{{ mascotaTemporal.id }}" class="btn btn-outline-warning">
+                    <a href="{% url 'editPet' mascotaTemporal.id %}" class="btn btn-outline-warning">
                         <i class="fa fa-pen"></i>
                     </a>
                     <a href="#" class="btn btn-outline-danger"

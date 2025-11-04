@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from Aplicaciones.Especie.models import Especie
 from Aplicaciones.Raza.models import Raza
@@ -77,5 +77,55 @@ def guardarMascota(request):
         )
 
         messages.success(request, "Pet saved successfully")
+
+    return redirect("indexMascota")
+
+
+def editPet(request, mascota_id):
+    mascota = get_object_or_404(Mascota, id=mascota_id)
+    especies = Especie.objects.all().order_by("nombre")
+    razas = Raza.objects.all().order_by("nombre")
+    context = {
+        "mascota": mascota,
+        "especies": especies,
+        "razas": razas,
+    }
+    return render(request, "Mascota/editPet.html", context)
+
+
+def updateMascota(request, mascota_id):
+    mascota = get_object_or_404(Mascota, id=mascota_id)
+
+    if request.method == "POST":
+        mascota.nombre = request.POST["nombre"]
+        especie_id = request.POST["especie"]
+        raza_id = request.POST.get("raza")
+        mascota.sexo = request.POST["sexo"]
+
+        fecha_nacimiento = request.POST.get("fecha_nacimiento")
+        mascota.fecha_nacimiento = fecha_nacimiento if fecha_nacimiento else None
+
+        edad_aproximada = request.POST.get("edad_aproximada")
+        mascota.edad_aproximada = int(edad_aproximada) if edad_aproximada else None
+
+        peso_kg = request.POST.get("peso_kg")
+        mascota.peso_kg = peso_kg if peso_kg else None
+
+        mascota.estado_salud = request.POST["estado_salud"]
+        mascota.descripcion = request.POST.get("descripcion", "")
+        mascota.vacunas_al_dia = True if request.POST.get("vacunas_al_dia") else False
+        mascota.esterilizado = True if request.POST.get("esterilizado") else False
+        mascota.fecha_ingreso = request.POST["fecha_ingreso"]
+        mascota.ubicacion_refugio = request.POST.get("ubicacion_refugio", "")
+
+        nueva_foto = request.FILES.get("foto_perfil")
+        if nueva_foto:
+            mascota.foto_perfil = nueva_foto
+
+        mascota.especie = Especie.objects.get(id=especie_id)
+        mascota.raza = Raza.objects.get(id=raza_id) if raza_id else None
+
+        mascota.save()
+        messages.success(request, "Pet updated successfully")
 
     return redirect("indexMascota")
