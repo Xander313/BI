@@ -2,10 +2,10 @@
 {% load static %}
 {% block content %}
 <br>
-<h1 class="text-center">Listado de Mascotas</h1>
+<h1 class="text-center">List of Pets</h1>
 <div class="text-center">
     <a href="{% url 'newPet' %}" class="btn btn-primary">
-        Registrar Mascota
+        Register Pet
     </a>
 </div>
 <hr>
@@ -63,14 +63,14 @@
                     <script>
                         function confirmarEliminacion(id) {
                             Swal.fire({
-                                title: '¿Estás seguro?',
-                                text: '¡Esta acción no se puede deshacer!',
+                                title: 'Are you sure you want to delete it?',
+                                text: 'This action cannot be undone!',
                                 icon: 'warning',
                                 showCancelButton: true,
                                 confirmButtonColor: '#3085d6',
                                 cancelButtonColor: '#d33',
-                                confirmButtonText: 'Sí, eliminar',
-                                cancelButtonText: 'Cancelar'
+                                confirmButtonText: 'Yes, delete',
+                                cancelButtonText: 'Cancel'
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     window.location.href = 'deleteMascota/' + id;

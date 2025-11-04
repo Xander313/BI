@@ -233,6 +233,22 @@
     <script src="{% static 'assets/js/plugins.js' %}"></script>
     <script src="{% static 'assets/js/main.js' %}"></script>
 
+    {% if messages %}
+    {% for message in messages %}
+    <script>
+        Swal.fire({
+
+            title: "{% if message.tags == 'error' %}¡ERROR!{% else %}SUCCESS!{% endif %}",
+
+            text: "{{ message }}",
+
+            icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}"
+
+        });
+    </script>
+    {% endfor %}
+    {% endif %}
+
 </body>
 
 </html>

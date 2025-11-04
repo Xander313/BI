@@ -25,8 +25,7 @@
                                     Select a species
                                 </option>
                                 {% for especie in especies %}
-                                <option value="{{ especie.id }}" {% if especie.id==mascota.especie_id %}selected{% endif
-                                    %}>
+                                <option value="{{ especie.id }}" {% if especie.id == mascota.especie_id %}selected{% endif%}>
                                     {{ especie.nombre }}
                                 </option>
                                 {% endfor %}
@@ -40,7 +39,7 @@
                             <select class="form-select" name="raza" id="raza">
                                 <option value="" {% if not mascota.raza_id %}selected{% endif %}>Not specified</option>
                                 {% for raza in razas %}
-                                <option value="{{ raza.id }}" {% if raza.id==mascota.raza_id %}selected{% endif %}>
+                                <option value="{{ raza.id }}" {% if raza.id == mascota.raza_id %}selected{% endif %}>
                                     {{ raza.nombre }}
                                 </option>
                                 {% endfor %}
@@ -51,8 +50,8 @@
                             <label class="form-label" for="sexo">Sex</label>
                             <select class="form-select" name="sexo" id="sexo" required>
                                 <option value="" disabled>Select sex</option>
-                                <option value="Male" {% if mascota.sexo=="Male" %}selected{% endif %}>Male</option>
-                                <option value="Female" {% if mascota.sexo=="Female" %}selected{% endif %}>Female
+                                <option value="Male" {% if mascota.sexo == "Male" %}selected{% endif %}>Male</option>
+                                <option value="Female" {% if mascota.sexo == "Female" %}selected{% endif %}>Female
                                 </option>
                             </select>
                         </div>
@@ -79,12 +78,12 @@
                             <label class="form-label" for="estado_salud">Health Status</label>
                             <select class="form-select" name="estado_salud" id="estado_salud" required>
                                 <option value="" disabled>Select health status</option>
-                                <option value="Bad" {% if mascota.estado_salud=="Bad" %}selected{% endif %}>Bad</option>
-                                <option value="Medium" {% if mascota.estado_salud=="Medium" %}selected{% endif %}>Medium
+                                <option value="Bad" {% if mascota.estado_salud == "Bad" %}selected{% endif %}>Bad</option>
+                                <option value="Medium" {% if mascota.estado_salud == "Medium" %}selected{% endif %}>Medium
                                 </option>
-                                <option value="Good" {% if mascota.estado_salud=="Good" %}selected{% endif %}>Good
+                                <option value="Good" {% if mascota.estado_salud == "Good" %}selected{% endif %}>Good
                                 </option>
-                                <option value="Excellent" {% if mascota.estado_salud=="Excellent" %}selected{% endif %}>
+                                <option value="Excellent" {% if mascota.estado_salud == "Excellent" %}selected{% endif %}>
                                     Excellent</option>
                             </select>
                         </div>
@@ -99,8 +98,7 @@
                             <div class="col-md-6">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="vacunas_al_dia"
-                                        id="vacunas_al_dia" value="true" {% if mascota.vacunas_al_dia %}checked{% endif
-                                        %}>
+                                        id="vacunas_al_dia" value="true" {% if mascota.vacunas_al_dia %}checked{% endif%}>
                                     <label class="form-check-label" for="vacunas_al_dia">Vaccines Updated</label>
                                 </div>
                             </div>
@@ -240,7 +238,7 @@
                         <label class="form-check-label" for="raza_activo">Active</label>
                     </div>
                     <div class="d-flex justify-content-end gap-2">
-                        <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                        <button class="bctn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
                         <button class="btn btn-primary" type="submit">Save Breed</button>
                     </div>
                 </form>
