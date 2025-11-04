@@ -3,4 +3,4 @@ from django.shortcuts import render
 # Create your views here.
 
 def index(request):
-    return render(request, 'templates/indexM.html')
+    return render(request, 'Mascota/index.html')
