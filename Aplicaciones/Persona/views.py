@@ -23,10 +23,10 @@ def guardarPersona(request):
     nuevapersona=Persona.objects.create(
             nombres=nombres,
             apellidos=apellidos,
-            identificacion=identificacion,
+            numero_identificacion=identificacion,
             fecha_nacimiento=fecha_nacimiento,
-            correo=correo,
-            telefono=telefono,
+            correo_electronico=correo,
+            telefono_contacto=telefono,
             direccion=direccion,
             ciudad=ciudad,
             ocupacion=ocupacion,
@@ -40,7 +40,7 @@ def eliminarPersona(request,id):
     personaEliminar = Persona.objects.get(id=id)
     personaEliminar.delete()
     messages.success(request,"Persona ELIMINADO exitosamente")
-    return redirect('inicioem')
+    return redirect('inicioper')
 
 #editar
 def editarPersona(request,id):
