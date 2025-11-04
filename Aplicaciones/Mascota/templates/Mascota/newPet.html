@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white text-center">
+                    <h2 class="mb-0">Register New Pet</h2>
+                </div>
+                <div class="card-body">
+                    <form action="guardarMascota" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label" for="nombre">Name</label>
+                            <input class="form-control" type="text" name="nombre" id="nombre" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="especie">Species</label>
+                            <select class="form-select" name="especie" id="especie" required>
+                                <option value="" selected disabled>Select a species</option>
+                                {% for especie in especies %}
+                                <option value="{{ especie.id }}">{{ especie.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="raza">Breed</label>
+                            <select class="form-select" name="raza" id="raza">
+                                <option value="" selected>Not specified</option>
+                                {% for raza in razas %}
+                                <option value="{{ raza.id }}">{{ raza.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="sexo">Sex</label>
+                            <input class="form-control" type="text" name="sexo" id="sexo" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="fecha_nacimiento">Birth Date</label>
+                            <input class="form-control" type="date" name="fecha_nacimiento" id="fecha_nacimiento">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="edad_aproximada">Approximate Age (years)</label>
+                            <input class="form-control" type="number" name="edad_aproximada" id="edad_aproximada"
+                                min="0" max="25">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="peso_kg">Weight (kg)</label>
+                            <input class="form-control" type="number" name="peso_kg" id="peso_kg" min="0" step="0.1">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="estado_salud">Health Status</label>
+                            <input class="form-control" type="text" name="estado_salud" id="estado_salud" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="descripcion">Description</label>
+                            <textarea class="form-control" name="descripcion" id="descripcion" rows="4"></textarea>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="vacunas_al_dia"
+                                        id="vacunas_al_dia" value="true">
+                                    <label class="form-check-label" for="vacunas_al_dia">Vaccines Updated</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="esterilizado"
+                                        id="esterilizado" value="true">
+                                    <label class="form-check-label" for="esterilizado">Sterilized</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="fecha_ingreso">Shelter Entry Date</label>
+                            <input class="form-control" type="date" name="fecha_ingreso" id="fecha_ingreso" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="ubicacion_refugio">Shelter Location</label>
+                            <input class="form-control" type="text" name="ubicacion_refugio" id="ubicacion_refugio">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label" for="foto_perfil">Profile Photo</label>
+                            <input class="form-control" type="file" name="foto_perfil" id="foto_perfil"
+                                accept="image/*">
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-success" type="submit">Save</button>
+                            <a class="btn btn-outline-danger" href="{% url 'index_mascota' %}">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
