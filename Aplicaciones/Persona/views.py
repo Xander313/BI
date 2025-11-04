@@ -33,14 +33,14 @@ def guardarPersona(request):
             ocupacion=ocupacion,
         )
     #mensaje de confirmacion
-    messages.success(request,"Persona guardada exitosamente")
+    messages.success(request,"Person saved successfully")
     return redirect('inicioper')
 
 
 def eliminarPersona(request,id):
     personaEliminar = Persona.objects.get(id=id)
     personaEliminar.delete()
-    messages.success(request,"Persona ELIMINADO exitosamente")
+    messages.success(request,"Person successfully removed")
     return redirect('inicioper')
 
 #editar
@@ -69,7 +69,7 @@ def procesarEdicionPersona(request):
     persona.ocupacion = request.POST["ocupacion"]
 
     persona.save()
-    messages.success(request, "Persona actualizada exitosamente")
+    messages.success(request, "Successfully updated person")
     return redirect('inicioper')
 
 
