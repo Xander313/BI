@@ -3,7 +3,11 @@
 {% block content %}
 <br>
 <h1 class="text-center">Listado de Personas</h1>
-
+<div class="text-center ">
+    <a href="nuevapersona" class="btn btn-primary ">
+        Agregar Empleado
+    </a>
+</div>
 <hr>
 <table class="table table-bordered table-striped table-hover ">
     <thead>
@@ -26,27 +30,27 @@
     </thead>
     <tbody>
         {% for personaTemporal in persona %}
-            <tr>
-                <td>{{personaTemporal.id}}</td>
-                <td>{{personaTemporal.nombres}}</td>
-                <td>{{personaTemporal.apellidos}}</td>
-                <td>{{personaTemporal.identificacion}}</td>
-                <td>{{personaTemporal.fecha_nacimiento}}</td>
-                <td>{{personaTemporal.correo}}</td>
-                <td>{{personaTemporal.telefono}}</td>
-                <td>{{personaTemporal.direccion}}</td>
-                <td>{{personaTemporal.ciudad}}</td>
-                <td>{{personaTemporal.ocupacion}}</td>
-                <td>
-                    <a href="editarPersona/{{personaTemporal.id}}" class="btn btn-outline-warning">
-                        <i class="fa fa-pen"></i>
-                    </a>
-                    <a href="#" class="btn btn-outline-danger" onclick="confirmarEliminacion('{{personaTemporal.id}}')">
-                        <i class="fa fa-trash"></i>
-                    </a>
-                    <script>
-                        function confirmarEliminacion(id) {
-                            Swal.fire({
+        <tr>
+            <td>{{personaTemporal.id}}</td>
+            <td>{{personaTemporal.nombres}}</td>
+            <td>{{personaTemporal.apellidos}}</td>
+            <td>{{personaTemporal.identificacion}}</td>
+            <td>{{personaTemporal.fecha_nacimiento}}</td>
+            <td>{{personaTemporal.correo}}</td>
+            <td>{{personaTemporal.telefono}}</td>
+            <td>{{personaTemporal.direccion}}</td>
+            <td>{{personaTemporal.ciudad}}</td>
+            <td>{{personaTemporal.ocupacion}}</td>
+            <td>
+                <a href="editarPersona/{{personaTemporal.id}}" class="btn btn-outline-warning">
+                    <i class="fa fa-pen"></i>
+                </a>
+                <a href="#" class="btn btn-outline-danger" onclick="confirmarEliminacion('{{personaTemporal.id}}')">
+                    <i class="fa fa-trash"></i>
+                </a>
+                <script>
+                    function confirmarEliminacion(id) {
+                        Swal.fire({
                             title: '¿Estás seguro?',
                             text: '¡Esta acción no se puede deshacer!',
                             icon: 'warning',
@@ -55,23 +59,19 @@
                             cancelButtonColor: '#d33',
                             confirmButtonText: 'Sí, eliminar',
                             cancelButtonText: 'Cancelar'
-                            }).then((result) => {
+                        }).then((result) => {
                             if (result.isConfirmed) {
                                 window.location.href = `eliminarPersona/${id}`;
                             }
-                            });
-                        }
-                        </script>  
-                </td>
-            </tr>
+                        });
+                    }
+                </script>
+            </td>
+        </tr>
         {% endfor %}
     </tbody>
 </table>
-<div class="text-center ">
-    <a href="nuevapersona" class="btn btn-primary " >
-        Agregar Empleado
-    </a>
-</div>
+
 <br>
 <br>
 {% endblock %}

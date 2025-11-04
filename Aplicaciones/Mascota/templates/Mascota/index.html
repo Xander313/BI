@@ -1,7 +1,95 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
-<section class="container py-5" style="height: 100vh;">
-    <h1>palntilla extendida</h1>
-</section>
+<br>
+<h1 class="text-center">Listado de Mascotas</h1>
+<div class="text-center">
+    <a href="nuevaMascota" class="btn btn-primary">
+        Registrar Mascota
+    </a>
+</div>
+<hr>
+<div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr class="table-success text-center">
+                <th>ID</th>
+                <th>Name</th>
+                <th>Species</th>
+                <th>Race</th>
+                <th>Sex</th>
+                <th>Born Date</th>
+                <th>approximate age. (years)</th>
+                <th>Height (kg)</th>
+                <th>health status</th>
+                <th>vaccines up to date</cth>
+                <th>sterilized</th>
+                <th>entry date</th>
+                <th>location in shelter</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if mascotas %}
+            {% for mascotaTemporal in mascotas %}
+            <tr>
+                <td>{{ mascotaTemporal.id }}</td>
+                <td>{{ mascotaTemporal.nombre }}</td>
+                <td>{{ mascotaTemporal.especie.nombre }}</td>
+                <td>
+                    {% if mascotaTemporal.raza %}
+                    {{ mascotaTemporal.raza.nombre }}
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+                <td>{{ mascotaTemporal.sexo }}</td>
+                <td>{{ mascotaTemporal.fecha_nacimiento|default_if_none:"-" }}</td>
+                <td>{{ mascotaTemporal.edad_aproximada|default_if_none:"-" }}</td>
+                <td>{{ mascotaTemporal.peso_kg|default_if_none:"-" }}</td>
+                <td>{{ mascotaTemporal.estado_salud }}</td>
+                <td>{{ mascotaTemporal.vacunas_al_dia|yesno:"Sí,No" }}</td>
+                <td>{{ mascotaTemporal.esterilizado|yesno:"Sí,No" }}</td>
+                <td>{{ mascotaTemporal.fecha_ingreso }}</td>
+                <td>{{ mascotaTemporal.ubicacion_refugio|default:"-" }}</td>
+                <td class="text-center">
+                    <a href="editarMascota/{{ mascotaTemporal.id }}" class="btn btn-outline-warning">
+                        <i class="fa fa-pen"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-danger"
+                        onclick="confirmarEliminacion('{{ mascotaTemporal.id }}')">
+                        <i class="fa fa-trash"></i>
+                    </a>
+                    <script>
+                        function confirmarEliminacion(id) {
+                            Swal.fire({
+                                title: '¿Estás seguro?',
+                                text: '¡Esta acción no se puede deshacer!',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Sí, eliminar',
+                                cancelButtonText: 'Cancelar'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = `eliminarMascota/${id}`;
+                                }
+                            });
+                        }
+                    </script>
+                </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="14" class="text-center">No hay mascotas registradas.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<br>
+<br>
 {% endblock %}
