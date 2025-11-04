@@ -9,7 +9,7 @@
                     <h2 class="mb-0">Edit Pet</h2>
                 </div>
                 <div class="card-body">
-                    <form action="{% url 'updateMascota' mascota.id %}" method="post" enctype="multipart/form-data">
+                    <form id="form-edit-pet" action="{% url 'updateMascota' mascota.id %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
 
                         <div class="mb-3">
@@ -36,8 +36,8 @@
 
                         <div class="mb-3">
                             <label class="form-label" for="raza">Breed</label>
-                            <select class="form-select" name="raza" id="raza">
-                                <option value="" {% if not mascota.raza_id %}selected{% endif %}>Not specified</option>
+                            <select class="form-select" name="raza" id="raza" required>
+                                <option value="" {% if not mascota.raza_id %}selected{% endif %} disabled>Select a breed</option>
                                 {% for raza in razas %}
                                 <option value="{{ raza.id }}" {% if raza.id == mascota.raza_id %}selected{% endif %}>
                                     {{ raza.nombre }}
@@ -59,19 +59,19 @@
                         <div class="mb-3">
                             <label class="form-label" for="fecha_nacimiento">Birth Date</label>
                             <input class="form-control" type="date" name="fecha_nacimiento" id="fecha_nacimiento"
-                                value="{{ mascota.fecha_nacimiento|date:'Y-m-d' }}">
+                                value="{{ mascota.fecha_nacimiento|date:'Y-m-d' }}" required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label" for="edad_aproximada">Approximate Age (years)</label>
                             <input class="form-control" type="number" name="edad_aproximada" id="edad_aproximada"
-                                min="0" max="25" value="{{ mascota.edad_aproximada|default_if_none:'' }}">
+                                min="0" max="25" value="{{ mascota.edad_aproximada|default_if_none:'' }}" required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label" for="peso_kg">Weight (kg)</label>
                             <input class="form-control" type="number" name="peso_kg" id="peso_kg" min="0" step="0.1"
-                                value="{{ mascota.peso_kg|default_if_none:'' }}">
+                                value="{{ mascota.peso_kg|default_if_none:'' }}" required>
                         </div>
 
                         <div class="mb-3">
@@ -91,21 +91,21 @@
                         <div class="mb-3">
                             <label class="form-label" for="descripcion">Description</label>
                             <textarea class="form-control" name="descripcion" id="descripcion"
-                                rows="4">{{ mascota.descripcion }}</textarea>
+                                rows="4" required>{{ mascota.descripcion }}</textarea>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="vacunas_al_dia"
-                                        id="vacunas_al_dia" value="true" {% if mascota.vacunas_al_dia %}checked{% endif%}>
+                                        id="vacunas_al_dia" value="true" {% if mascota.vacunas_al_dia %}checked{% endif%} required>
                                     <label class="form-check-label" for="vacunas_al_dia">Vaccines Updated</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="esterilizado"
-                                        id="esterilizado" value="true" {% if mascota.esterilizado %}checked{% endif %}>
+                                        id="esterilizado" value="true" {% if mascota.esterilizado %}checked{% endif %} required>
                                     <label class="form-check-label" for="esterilizado">Sterilized</label>
                                 </div>
                             </div>
@@ -120,7 +120,7 @@
                         <div class="mb-3">
                             <label class="form-label" for="ubicacion_refugio">Shelter Location</label>
                             <input class="form-control" type="text" name="ubicacion_refugio" id="ubicacion_refugio"
-                                value="{{ mascota.ubicacion_refugio }}">
+                                value="{{ mascota.ubicacion_refugio }}" required>
                         </div>
 
                         <div class="mb-4">
@@ -138,8 +138,12 @@
 
 
                             <div class="d-flex justify-content-between">
-                                <button class="btn btn-warning text-white" type="submit">Update</button>
-                                <a class="btn btn-outline-danger" href="{% url 'indexMascota' %}">Cancel</a>
+                                <button class="btn btn-warning text-white" type="submit">
+                                    <i class="fa fa-save me-1"></i> Update
+                                </button>
+                                <a class="btn btn-outline-danger" href="{% url 'indexMascota' %}">
+                                    <i class="fa fa-times me-1"></i> Cancel
+                                </a>
                             </div>
                     </form>
                 </div>
@@ -150,10 +154,10 @@
 
 <div class="position-fixed bottom-0 start-0 ms-4 mb-4 d-flex flex-column gap-2">
     <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#modalNuevaEspecie">
-        Add Species
+        <i class="fa fa-leaf me-1"></i> Add Species
     </button>
     <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalNuevaRaza">
-        Add Breed
+        <i class="fa fa-dna me-1"></i> Add Breed
     </button>
 </div>
 
@@ -194,8 +198,12 @@
                         <label class="form-check-label" for="especie_activo">Active</label>
                     </div>
                     <div class="d-flex justify-content-end gap-2">
-                        <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
-                        <button class="btn btn-success" type="submit">Save Species</button>
+                        <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">
+                            <i class="fa fa-times me-1"></i> Cancel
+                        </button>
+                        <button class="btn btn-success" type="submit">
+                            <i class="fa fa-save me-1"></i> Save Species
+                        </button>
                     </div>
                 </form>
             </div>
@@ -238,12 +246,174 @@
                         <label class="form-check-label" for="raza_activo">Active</label>
                     </div>
                     <div class="d-flex justify-content-end gap-2">
-                        <button class="bctn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
-                        <button class="btn btn-primary" type="submit">Save Breed</button>
+                        <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">
+                            <i class="fa fa-times me-1"></i> Cancel
+                        </button>
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fa fa-save me-1"></i> Save Breed
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        $("#foto_perfil").fileinput({
+            theme: "fas",
+            showUpload: false,
+            showRemove: true,
+            allowedFileExtensions: ["jpg", "jpeg", "png"],
+            maxFileSize: 2048,
+            browseLabel: "Select image",
+            removeLabel: "Remove",
+            msgPlaceholder: "Find an image...",
+            msgSizeTooLarge: "The image exceeds the allowed size of 2 MB.",
+            msgInvalidFileExtension: "Invalid format. Only JPG, JPEG and PNG are allowed.",
+            
+            dropZoneTitle: "Drag and drop your image here or click on 'Select image'."
+        });
+    });
+</script>
+
+
+
+<script>
+    $(function () {
+        const today = new Date().toISOString().split('T')[0];
+        $('#fecha_nacimiento, #fecha_ingreso').attr('max', today);
+
+        $('#form-edit-pet').validate({
+            ignore: [],
+            rules: {
+                nombre: {
+                    required: true,
+                    minlength: 2,
+                    maxlength: 80
+                },
+                especie: {
+                    required: true
+                },
+                raza: {
+                    required: true
+                },
+                sexo: {
+                    required: true
+                },
+                fecha_nacimiento: {
+                    required: true,
+                },
+                edad_aproximada: {
+                    required: true,
+                    number: true,
+                    min: 0,
+                    max: 25
+                },
+                peso_kg: {
+                    required: true,
+                    number: true,
+                    min: 0,
+                    max: 200
+                },
+                estado_salud: {
+                    required: true
+                },
+                descripcion: {
+                    required: true,
+                    maxlength: 1000
+                },
+                vacunas_al_dia: {
+                    required: true
+                },
+                esterilizado: {
+                    required: true
+                },
+                fecha_ingreso: {
+                    required: true,
+                },
+                ubicacion_refugio: {
+                    required: true,
+                    maxlength: 120
+                },
+                foto_perfil: {
+                    extension: "jpg|jpeg|png|gif"
+                }
+            },
+            messages: {
+                nombre: {
+                    required: "Please enter the pet name.",
+                    minlength: "Name must be at least 2 characters long.",
+                    maxlength: "Name cannot exceed 80 characters."
+                },
+                especie: {
+                    required: "Please select a species."
+                },
+                raza: {
+                    required: "Please select a breed."
+                },
+                sexo: {
+                    required: "Please select the pet sex."
+                },
+                fecha_nacimiento: {
+                    required: "Please enter the birth date.",
+                },
+                edad_aproximada: {
+                    required: "Please enter the approximate age.",
+                    number: "Please enter a valid number.",
+                    min: "Age cannot be negative.",
+                    max: "Age cannot be greater than 25."
+                },
+                peso_kg: {
+                    required: "Please enter the pet weight.",
+                    number: "Please enter a valid weight.",
+                    min: "Weight cannot be negative.",
+                    max: "Weight cannot exceed 200 kg."
+                },
+                estado_salud: {
+                    required: "Please select the health status."
+                },
+                descripcion: {
+                    required: "Please provide a description.",
+                    maxlength: "Description cannot exceed 1000 characters."
+                },
+                vacunas_al_dia: {
+                    required: "Please confirm the vaccine status."
+                },
+                esterilizado: {
+                    required: "Please confirm if the pet is sterilized."
+                },
+                fecha_ingreso: {
+                    required: "Please enter the shelter entry date.",
+                },
+                ubicacion_refugio: {
+                    required: "Please enter the shelter location.",
+                    maxlength: "Location cannot exceed 120 characters."
+                },
+                foto_perfil: {
+                    extension: "Allowed formats: jpg, jpeg, png or gif."
+                }
+            },
+            errorElement: 'div',
+            errorClass: 'error',
+            errorPlacement: function (error, element) {
+                if (element.prop('type') === 'file') {
+                    error.insertAfter(element.parent());
+                } else if (element.prop('type') === 'checkbox') {
+                    error.insertAfter(element.closest('.form-check'));
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            highlight: function (element) {
+                $(element).addClass('error');
+            },
+            unhighlight: function (element) {
+                $(element).removeClass('error');
+            }
+        });
+    });
+</script>
 {% endblock %}

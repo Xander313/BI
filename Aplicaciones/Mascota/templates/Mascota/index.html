@@ -5,12 +5,12 @@
 <h1 class="text-center">List of Pets</h1>
 <div class="text-center">
     <a href="{% url 'newPet' %}" class="btn btn-primary">
-        Register Pet
+        <i class="fa fa-paw me-1"></i> Register Pet
     </a>
 </div>
 <hr>
-<div class="table-responsive">
-    <table class="table table-bordered table-striped table-hover">
+<div class="table-responsive " style="width: 90%; height: auto; overflow-x: auto; margin: auto;">
+    <table class="table table-bordered table-striped table-hover" id="table-pet">
         <thead>
             <tr class="table-success text-center">
                 <th>ID</th>
@@ -90,6 +90,26 @@
     </table>
 </div>
 
-<br>
-<br>
+<script>
+$('#table-pet').DataTable({
+    responsive: true,
+    dom: 'lBfrtip',
+    buttons: [
+        { extend: 'copy', text: '<i class="fa fa-copy"></i> Copiar' },
+        { extend: 'csv', text: '<i class="fa fa-file-csv"></i> CSV' },
+        { extend: 'excel', text: '<i class="fa fa-file-excel"></i> Excel' },
+        { extend: 'pdf', text: '<i class="fa fa-file-pdf"></i> PDF' },
+        { extend: 'print', text: '<i class="fa fa-print"></i> Imprimir' }
+    ],
+    language: {
+        url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+    },
+
+    lengthMenu: [
+        [5, 10, 25, 50, 100, -1],
+        [5, 10, 25, 50, 100, "Todos"]
+    ],
+    pageLength: 10
+});
+</script>
 {% endblock %}

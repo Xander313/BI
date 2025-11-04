@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from django.conf import settings
 from django.contrib import messages
@@ -31,37 +32,71 @@ def newPet(request):
 
 def guardarMascota(request):
     if request.method == "POST":
-        nombre = request.POST["nombre"]
-        especie_id = request.POST["especie"]
+        nombre = (request.POST.get("nombre") or "").strip()
+        especie_id = request.POST.get("especie")
         raza_id = request.POST.get("raza")
-        sexo = request.POST["sexo"]
+        sexo = request.POST.get("sexo")
         fecha_nacimiento = request.POST.get("fecha_nacimiento")
         edad_aproximada = request.POST.get("edad_aproximada")
         peso_kg = request.POST.get("peso_kg")
-        estado_salud = request.POST["estado_salud"]
-        descripcion = request.POST.get("descripcion", "")
+        estado_salud = request.POST.get("estado_salud")
+        descripcion = (request.POST.get("descripcion") or "").strip()
         vacunas_al_dia = True if request.POST.get("vacunas_al_dia") else False
         esterilizado = True if request.POST.get("esterilizado") else False
-        fecha_ingreso = request.POST["fecha_ingreso"]
-        ubicacion_refugio = request.POST.get("ubicacion_refugio", "")
+        fecha_ingreso = request.POST.get("fecha_ingreso")
+        ubicacion_refugio = (request.POST.get("ubicacion_refugio") or "").strip()
         foto_perfil = request.FILES.get("foto_perfil")
 
-        especie = Especie.objects.get(id=especie_id)
+        if not nombre or not especie_id or not sexo or not estado_salud or not fecha_ingreso:
+            messages.error(request, "Please complete all required fields before saving the pet.")
+            return redirect("newPet")
+
+        try:
+            especie = Especie.objects.get(id=especie_id)
+        except Especie.DoesNotExist:
+            messages.error(request, "Selected species does not exist.")
+            return redirect("newPet")
 
         raza = None
         if raza_id:
-            raza = Raza.objects.get(id=raza_id)
+            try:
+                raza = Raza.objects.get(id=raza_id)
+            except Raza.DoesNotExist:
+                messages.error(request, "Selected breed does not exist.")
+                return redirect("newPet")
 
         if fecha_nacimiento == "":
             fecha_nacimiento = None
+        elif fecha_nacimiento:
+            try:
+                fecha_nacimiento = datetime.strptime(fecha_nacimiento, "%Y-%m-%d").date()
+            except ValueError:
+                messages.error(request, "Invalid birth date.")
+                return redirect("newPet")
 
         if edad_aproximada == "":
             edad_aproximada = None
         else:
-            edad_aproximada = int(edad_aproximada)
+            try:
+                edad_aproximada = int(edad_aproximada)
+            except ValueError:
+                messages.error(request, "Approximate age must be numeric.")
+                return redirect("newPet")
 
         if peso_kg == "":
             peso_kg = None
+        else:
+            try:
+                peso_kg = float(peso_kg)
+            except ValueError:
+                messages.error(request, "Weight must be numeric.")
+                return redirect("newPet")
+
+        try:
+            fecha_ingreso = datetime.strptime(fecha_ingreso, "%Y-%m-%d").date()
+        except ValueError:
+            messages.error(request, "Invalid shelter entry date.")
+            return redirect("newPet")
 
         Mascota.objects.create(
             nombre=nombre,
