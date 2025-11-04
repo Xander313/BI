@@ -44,7 +44,7 @@ class Mascota(models.Model):
         max_length=120,
         blank=True,
     )
-    foto_perfil = models.ImageField(upload_to="mascotas/", null=True, blank=True)
+    foto_perfil = models.ImageField(upload_to="media/mascotas/", null=True, blank=True)
 
     adoptantes = models.ManyToManyField(
         "Persona.Persona",
