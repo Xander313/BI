@@ -10,17 +10,12 @@ def guardar_raza(request):
         descripcion = request.POST.get("descripcion", "")
         temperamento_predominante = request.POST.get("temperamento_predominante", "")
         esperanza_vida_media = request.POST.get("esperanza_vida_media")
-        activo = True if request.POST.get("activo") else False
-
-        if esperanza_vida_media == "":
-            esperanza_vida_media = None
 
         Raza.objects.create(
             nombre=nombre,
             descripcion=descripcion,
             temperamento_predominante=temperamento_predominante,
             esperanza_vida_media=esperanza_vida_media,
-            activo=activo,
         )
 
         messages.success(request, "Breed saved successfully")
