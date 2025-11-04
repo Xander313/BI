@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+
 <br>
 <h1 class="text-center">List of Persons</h1>
 <div class="text-center ">
@@ -9,7 +10,7 @@
     </a>
 </div>
 <hr>
-<table class="table table-bordered table-striped table-hover ">
+<table class="table table-bordered table-striped table-hover" id="table_person">
     <thead>
         <tr class="table-success text-center">
             <th>ID</th>
@@ -268,6 +269,29 @@ $(function () {
     });
 });
 </script>
+<script>
+$('#table_person').DataTable({
+    responsive: true,
+    dom: 'lBfrtip',
+    buttons: [
+        { extend: 'copy', text: '<i class="fa fa-copy"></i> Copiar' },
+        { extend: 'csv', text: '<i class="fa fa-file-csv"></i> CSV' },
+        { extend: 'excel', text: '<i class="fa fa-file-excel"></i> Excel' },
+        { extend: 'pdf', text: '<i class="fa fa-file-pdf"></i> PDF' },
+        { extend: 'print', text: '<i class="fa fa-print"></i> Imprimir' }
+    ],
+    language: {
+        url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+    },
+
+    lengthMenu: [
+        [5, 10, 25, 50, 100, -1],
+        [5, 10, 25, 50, 100, "Todos"]
+    ],
+    pageLength: 10
+});
+</script>
+
 
 <br>
 <br>
