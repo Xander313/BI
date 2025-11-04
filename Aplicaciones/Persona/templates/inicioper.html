@@ -2,10 +2,10 @@
 {% load static %}
 {% block content %}
 <br>
-<h1 class="text-center">Listado de Personas</h1>
+<h1 class="text-center">List of Persons</h1>
 <div class="text-center ">
     <a href="nuevapersona" class="btn btn-primary ">
-        Agregar Empleado
+        New Person
     </a>
 </div>
 <hr>
@@ -44,36 +44,230 @@
             <td>{{personaTemporal.activo}}</td>
             <td>{{personaTemporal.fecha_creacion}}</td>
             <td>{{personaTemporal.fecha_actualizacion}}</td>
-            <td>
-                <a href="editarPersona/{{personaTemporal.id}}" class="btn btn-outline-warning">
+            <td >
+                <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#modalEditar{{ personaTemporal.id }}">
                     <i class="fa fa-pen"></i>
-                </a>
-                <a href="#" class="btn btn-outline-danger" onclick="confirmarEliminacion('{{personaTemporal.id}}')">
+                </button>
+                <a href="#" class="btn btn-outline-danger" onclick="confirmarEliminacion('{{ personaTemporal.id }}')">
                     <i class="fa fa-trash"></i>
                 </a>
-                <script>
-                    function confirmarEliminacion(id) {
-                        Swal.fire({
-                            title: '¿Estás seguro?',
-                            text: '¡Esta acción no se puede deshacer!',
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Sí, eliminar',
-                            cancelButtonText: 'Cancelar'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = `eliminarPersona/${id}`;
-                            }
-                        });
-                    }
-                </script>
+
+                <div class="modal fade" id="modalEditar{{ personaTemporal.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header bg-warning text-dark">
+                                <h5 class="modal-title">Edit Person</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{% url 'procesarEdicionPersona' %}" method="post" class="form_person">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="id" value="{{ personaTemporal.id }}">
+
+                                    <label>Names</label>
+                                    <input class="form-control" type="text" name="nombres" value="{{ personaTemporal.nombres }}" required><br>
+
+                                    <label>Last Names</label>
+                                    <input class="form-control" type="text" name="apellidos" value="{{ personaTemporal.apellidos }}" required><br>
+
+                                    <label>Identification Number</label>
+                                    <input class="form-control" type="text" name="identificacion" value="{{ personaTemporal.numero_identificacion }}" required><br>
+
+                                    <label>Born Date</label>
+                                    <input class="form-control" type="date" name="fecha_nacimiento" value="{{ personaTemporal.fecha_nacimiento|date:'Y-m-d' }}" required><br>
+
+                                    <label>Email</label>
+                                    <input class="form-control" type="email" name="correo" value="{{ personaTemporal.correo_electronico }}" required><br>
+
+                                    <label>Phone Number</label>
+                                    <input class="form-control" type="text" name="telefono" value="{{ personaTemporal.telefono_contacto }}" required><br>
+
+                                    <label>Direction</label>
+                                    <input class="form-control" type="text" name="direccion" value="{{ personaTemporal.direccion }}" required><br>
+
+                                    <label>City</label>
+                                    <input class="form-control" type="text" name="ciudad" value="{{ personaTemporal.ciudad }}" required><br>
+
+                                    <label>Ocupation</label>
+                                    <input class="form-control" type="text" name="ocupacion" value="{{ personaTemporal.ocupacion }}" required><br>
+
+                                    <div class="d-flex justify-content-end">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                            <i class="fa fa-times me-1"></i> Cancel
+                                        </button>
+                                        <button type="submit" class="btn btn-success ms-2">
+                                            <i class="fa fa-save me-1"></i> Save Changes
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="14" class="text-center">There are no registered users.</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<script>
+$(function () {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate()).toISOString().split('T')[0];
+    const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate()).toISOString().split('T')[0];
+
+    // Métodos personalizados
+    $.validator.addMethod("lettersOnly", function(value, element) {
+        return this.optional(element) || /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(value);
+    }, "Letters only, please.");
+
+    $.validator.addMethod("ecuadorID", function(value, element) {
+        return this.optional(element) || /^\d{10}$/.test(value);
+    }, "Please enter a valid Ecuadorian ID (10 digits).");
+
+    $.validator.addMethod("ecuadorPhone", function(value, element) {
+        return this.optional(element) || /^09\d{8}$/.test(value);
+    }, "Please enter a valid Ecuadorian phone number (09XXXXXXXX).");
+
+    $.validator.addMethod("adultAge", function(value, element) {
+        if (!value) return false;
+        const birthDate = new Date(value);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+        return age >= 18 && age <= 100 && birthDate <= today;
+    }, "Age must be between 18 and 100 years old, and not in the future.");
+
+    $.validator.addMethod("noSpecialChars", function(value, element) {
+        return this.optional(element) || /^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ\s\.,#-]+$/.test(value);
+    }, "Special characters are not allowed.");
+
+    $('.form_person').each(function() {
+    $(this).validate({
+        ignore: [],
+        rules: {
+            nombres: {
+                required: true,
+                lettersOnly: true,
+                minlength: 11,
+                maxlength: 50
+            },
+            apellidos: {
+                required: true,
+                lettersOnly: true,
+                minlength: 11,
+                maxlength: 50
+            },
+            identificacion: {
+                required: true,
+                ecuadorID: true
+            },
+            fecha_nacimiento: {
+                required: true,
+                adultAge: true
+            },
+            correo: {
+                required: true,
+                email: true
+            },
+            telefono: {
+                required: true,
+                ecuadorPhone: true
+            },
+            direccion: {
+                required: true,
+                minlength: 5,
+                maxlength: 120,
+                noSpecialChars: true
+            },
+            ciudad: {
+                required: true,
+                lettersOnly: true,
+                minlength: 2,
+                maxlength: 60
+            },
+            ocupacion: {
+                required: true,
+                lettersOnly: true,
+                minlength: 3,
+                maxlength: 80
+            }
+        },
+        messages: {
+            nombres: {
+                required: "Please enter the first name.",
+                minlength: "Name must be at least 11 characters long.",
+                maxlength: "Name cannot exceed 50 characters.",
+                lettersOnly: "Letters only, please."
+            },
+            apellidos: {
+                required: "Please enter the last name.",
+                minlength: "Last name must be at least 11 characters long.",
+                maxlength: "Last name cannot exceed 50 characters.",
+                lettersOnly: "Letters only, please."
+            },
+            identificacion: {
+                required: "Please enter the ID number.",
+                ecuadorID: "The ID must have exactly 10 digits."
+            },
+            fecha_nacimiento: {
+                required: "Please select the birth date.",
+                adultAge: "Age must be between 18 and 100 years old, and not in the future."
+            },
+            correo: {
+                required: "Please enter an email address.",
+                email: "Please enter a valid email (must contain @)."
+            },
+            telefono: {
+                required: "Please enter the phone number.",
+                ecuadorPhone: "The phone must start with 09 and have 10 digits."
+            },
+            direccion: {
+                required: "Please enter the address.",
+                minlength: "The address is too short.",
+                maxlength: "The address cannot exceed 120 characters.",
+                noSpecialChars: "Special characters are not allowed."
+            },
+            ciudad: {
+                required: "Please enter the city.",
+                lettersOnly: "Letters only, please.",
+                minlength: "City must be at least 2 characters long.",
+                maxlength: "City cannot exceed 60 characters."
+            },
+            ocupacion: {
+                required: "Please enter the occupation.",
+                lettersOnly: "Letters only, please.",
+                minlength: "Occupation must be at least 3 characters long.",
+                maxlength: "Occupation cannot exceed 80 characters."
+            }
+        },
+            errorElement: 'div',
+            errorClass: 'error',
+            errorPlacement: function (error, element) {
+                error.insertAfter(element);
+            },
+            highlight: function (element) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element) {
+                $(element).removeClass('is-invalid');
+            },
+            submitHandler: function(form) {
+                form.submit();
+            }
+        });
+    });
+     $('.modal').on('shown.bs.modal', function() {
+        $(this).find('input[name="fecha_nacimiento"]').attr('min', minDate).attr('max', maxDate);
+    });
+});
+</script>
 
 <br>
 <br>

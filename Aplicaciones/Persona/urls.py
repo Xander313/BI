@@ -7,5 +7,5 @@ urlpatterns=[
     path('guardarPersona',views.guardarPersona),
     path('eliminarPersona/<id>',views.eliminarPersona),
     path('editarPersona/<id>',views.editarPersona),
-    path('procesarEdicionPersona',views.procesarEdicionPersona),
+    path('procesarEdicionPersona',views.procesarEdicionPersona,name='procesarEdicionPersona'),
 ]

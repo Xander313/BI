@@ -1,6 +1,7 @@
 
 
 # Create your views here.
+from datetime import datetime
 from .models import Persona
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -48,30 +49,27 @@ def editarPersona(request,id):
     return render(request,"editarPersona.html",{'personaEditar':personaEditar})
 
 def procesarEdicionPersona(request):
-    id=request.POST["id"]
-    nombres = request.POST["nombres"]
-    apellidos = request.POST["apellidos"]
-    identificacion = request.POST["identificacion"]
+    id = request.POST["id"]
+    persona = Persona.objects.get(id=id)
+
+    persona.nombres = request.POST["nombres"]
+    persona.apellidos = request.POST["apellidos"]
+    persona.numero_identificacion = request.POST["identificacion"]
+
     fecha_nacimiento = request.POST["fecha_nacimiento"]
-    correo = request.POST["correo"]
-    telefono = request.POST["telefono"]
-    direccion = request.POST["direccion"]
-    ciudad = request.POST["ciudad"]
-    ocupacion = request.POST["ocupacion"]
-    
-    
-    persona=Persona.objects.get(id=id)
-    persona.nombres=nombres,
-    persona.apellidos=apellidos,
-    persona.identificacion=identificacion,
-    persona.fecha_nacimiento=fecha_nacimiento,
-    persona.correo=correo,
-    persona.telefono=telefono,
-    persona.direccion=direccion,
-    persona.ciudad=ciudad,
-    persona.ocupacion=ocupacion,
+    if fecha_nacimiento:
+        persona.fecha_nacimiento = datetime.strptime(fecha_nacimiento, "%Y-%m-%d").date()
+    else:
+        persona.fecha_nacimiento = None
+
+    persona.correo_electronico = request.POST["correo"]
+    persona.telefono_contacto = request.POST["telefono"]
+    persona.direccion = request.POST["direccion"]
+    persona.ciudad = request.POST["ciudad"]
+    persona.ocupacion = request.POST["ocupacion"]
+
     persona.save()
-    messages.success(request,"Persona ACTUALIZADO exitosamente")
+    messages.success(request, "Persona actualizada exitosamente")
     return redirect('inicioper')
 
 

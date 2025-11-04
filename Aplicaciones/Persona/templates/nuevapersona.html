@@ -4,8 +4,8 @@
 <div class="row" >
     <div class="col-md-3" ></div>
     <div class="col-md-6 bg-white" >
-        <h1 >Nuevo Empleado</h1>
-        <form action="guardarPersona" method="post">
+        <h1 >New Person</h1>
+        <form action="guardarPersona" method="post" id="form_newperson">
             {% csrf_token %}
             
             <label for="nombres" >Names </label><br>
@@ -35,10 +35,166 @@
             <label for="ocupacion" >Ocupation</label><br>
             <input class="form-control" type="text" name="ocupacion" id="ocupacion" required><br>
 
-            <button class="btn btn-success" type="submit">Guardar</button>
-            <a class="btn btn-outline-danger" href="{% url 'inicioper' %}">Cancelar</a><br><br>
+            <button class="btn btn-success" type="submit">Save</button>
+            <a class="btn btn-outline-danger" href="{% url 'inicioper' %}">Cancel</a><br><br>
         </form>
     </div>
     <div class="col-md-3"></div>
 </div>
+<script>
+$(function () {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+
+    const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
+        .toISOString().split('T')[0];
+    const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate())
+        .toISOString().split('T')[0];
+
+    $('#fecha_nacimiento').attr('min', minDate);
+    $('#fecha_nacimiento').attr('max', maxDate);
+
+    $.validator.addMethod("lettersOnly", function(value, element) {
+        return this.optional(element) || /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(value);
+    }, "Letters only, please.");
+
+    $.validator.addMethod("ecuadorID", function(value, element) {
+        return this.optional(element) || /^\d{10}$/.test(value);
+    }, "Please enter a valid Ecuadorian ID (10 digits).");
+
+    $.validator.addMethod("ecuadorPhone", function(value, element) {
+        return this.optional(element) || /^09\d{8}$/.test(value);
+    }, "Please enter a valid Ecuadorian phone number (09XXXXXXXX).");
+
+    $.validator.addMethod("adultAge", function(value, element) {
+        if (!value) return false;
+        const birthDate = new Date(value);
+        const today = new Date();
+
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age >= 18 && age <= 100 && birthDate <= today;
+    }, "Age must be between 18 and 100 years old, and not in the future.");
+
+    $.validator.addMethod("noSpecialChars", function(value, element) {
+        return this.optional(element) || /^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ\s\.,#-]+$/.test(value);
+    }, "Special characters are not allowed.");
+
+    $('#form_newperson').validate({
+        ignore: [],
+        rules: {
+            nombres: {
+                required: true,
+                lettersOnly: true,
+                minlength: 2,
+                maxlength: 50
+            },
+            apellidos: {
+                required: true,
+                lettersOnly: true,
+                minlength: 2,
+                maxlength: 50
+            },
+            identificacion: {
+                required: true,
+                ecuadorID: true
+            },
+            fecha_nacimiento: {
+                required: true,
+                adultAge: true
+            },
+            correo: {
+                required: true,
+                email: true
+            },
+            telefono: {
+                required: true,
+                ecuadorPhone: true
+            },
+            direccion: {
+                required: true,
+                minlength: 5,
+                maxlength: 120,
+                noSpecialChars: true
+            },
+            ciudad: {
+                required: true,
+                lettersOnly: true,
+                minlength: 2,
+                maxlength: 60
+            },
+            ocupacion: {
+                required: true,
+                lettersOnly: true,
+                minlength: 3,
+                maxlength: 80
+            }
+        },
+        messages: {
+            nombres: {
+                required: "Please enter the first name.",
+                minlength: "Name must be at least 2 characters long.",
+                maxlength: "Name cannot exceed 50 characters.",
+                lettersOnly: "Letters only, please."
+            },
+            apellidos: {
+                required: "Please enter the last name.",
+                minlength: "Last name must be at least 2 characters long.",
+                maxlength: "Last name cannot exceed 50 characters.",
+                lettersOnly: "Letters only, please."
+            },
+            identificacion: {
+                required: "Please enter the ID number.",
+                ecuadorID: "The ID must have exactly 10 digits."
+            },
+            fecha_nacimiento: {
+                required: "Please select the birth date.",
+                adultAge: "Age must be between 18 and 100 years old, and not in the future."
+            },
+            correo: {
+                required: "Please enter an email address.",
+                email: "Please enter a valid email (must contain @)."
+            },
+            telefono: {
+                required: "Please enter the phone number.",
+                ecuadorPhone: "The phone must start with 09 and have 10 digits."
+            },
+            direccion: {
+                required: "Please enter the address.",
+                minlength: "The address is too short.",
+                maxlength: "The address cannot exceed 120 characters.",
+                noSpecialChars: "Special characters are not allowed."
+            },
+            ciudad: {
+                required: "Please enter the city.",
+                lettersOnly: "Letters only, please.",
+                minlength: "City must be at least 2 characters long.",
+                maxlength: "City cannot exceed 60 characters."
+            },
+            ocupacion: {
+                required: "Please enter the occupation.",
+                lettersOnly: "Letters only, please.",
+                minlength: "Occupation must be at least 3 characters long.",
+                maxlength: "Occupation cannot exceed 80 characters."
+            }
+        },
+        errorElement: 'div',
+        errorClass: 'error',
+        errorPlacement: function (error, element) {
+            error.insertAfter(element);
+        },
+        highlight: function (element) {
+            $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element) {
+            $(element).removeClass('is-invalid');
+        }
+    });
+});
+</script>
+
+
 {% endblock %}
