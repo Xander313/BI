@@ -7,4 +7,7 @@ from django.contrib import messages
 
 def inicio(request):
     listadoPersona=Persona.objects.all()
-    return render(request,"inicioem.html",{'empleado':listadoPersona})
+    return render(request,"inicioper.html",{'empleado':listadoPersona})
+def nuevoEmpleado(request):
+    return render(request,"nuevoEmpleado.html")
+#Almacenando los datos de cargo en la Bdd
