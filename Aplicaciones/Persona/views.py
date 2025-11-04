@@ -32,7 +32,7 @@ def guardarPersona(request):
             ocupacion=ocupacion,
         )
     #mensaje de confirmacion
-    messages.success(request,"Persona guardado exitosamente")
+    messages.success(request,"Persona guardada exitosamente")
     return redirect('inicioper')
 
 
