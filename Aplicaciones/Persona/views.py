@@ -36,30 +36,43 @@ def guardarPersona(request):
     return redirect('inicioper')
 
 
-def eliminarEmpleado(request,id):
-    empleadoEliminar = Empleado.objects.get(id=id)
-    empleadoEliminar.delete()
-    messages.success(request,"Empleado ELIMINADO exitosamente")
+def eliminarPersona(request,id):
+    personaEliminar = Persona.objects.get(id=id)
+    personaEliminar.delete()
+    messages.success(request,"Persona ELIMINADO exitosamente")
     return redirect('inicioem')
 
 #editar
-def editarEmpleado(request,id):
-    empleadoEditar=Empleado.objects.get(id=id)
-    return render(request,"editarEmpleado.html",{'empleadoEditar':empleadoEditar})
+def editarPersona(request,id):
+    personaEditar=Persona.objects.get(id=id)
+    return render(request,"editarPersona.html",{'personaEditar':personaEditar})
 
-def procesarEdicionEmpleado(request):
+def procesarEdicionPersona(request):
     id=request.POST["id"]
-    nombre = request.POST["nombre"]
-    ubicacion = request.POST["ubicacion"]
+    nombres = request.POST["nombres"]
+    apellidos = request.POST["apellidos"]
+    identificacion = request.POST["identificacion"]
+    fecha_nacimiento = request.POST["fecha_nacimiento"]
+    correo = request.POST["correo"]
     telefono = request.POST["telefono"]
-    empleado=Empleado.objects.get(id=id)
-    empleado.nombre=nombre
-    empleado.ubicacion=ubicacion
-    empleado.telefono=telefono
-    empleado.save()
-    #mensaje de confirmacion
-    messages.success(request,"Empleado ACTUALIZADO exitosamente")
-    return redirect('inicioem')
+    direccion = request.POST["direccion"]
+    ciudad = request.POST["ciudad"]
+    ocupacion = request.POST["ocupacion"]
+    
+    
+    persona=Persona.objects.get(id=id)
+    persona.nombres=nombres,
+    persona.apellidos=apellidos,
+    persona.identificacion=identificacion,
+    persona.fecha_nacimiento=fecha_nacimiento,
+    persona.correo=correo,
+    persona.telefono=telefono,
+    persona.direccion=direccion,
+    persona.ciudad=ciudad,
+    persona.ocupacion=ocupacion,
+    persona.save()
+    messages.success(request,"Persona ACTUALIZADO exitosamente")
+    return redirect('inicioper')
 
 
 

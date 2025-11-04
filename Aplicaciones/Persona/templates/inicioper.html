@@ -1,4 +1,4 @@
-{% extends 'plantilla.html' %}
+{% extends 'base.html' %}
 {% block content %}
 <br>
 <h1 class="text-center">Listado de Personas</h1>
@@ -37,10 +37,10 @@
                 <td>{{personaTemporal.ciudad}}</td>
                 <td>{{personaTemporal.ocupacion}}</td>
                 <td>
-                    <a href="editarEmpleado/{{empleadoTemporal.id}}" class="btn btn-outline-warning">
+                    <a href="editarPersona/{{personaTemporal.id}}" class="btn btn-outline-warning">
                         <i class="fa fa-pen"></i>
                     </a>
-                    <a href="#" class="btn btn-outline-danger" onclick="confirmarEliminacion('{{empleadoTemporal.id}}')">
+                    <a href="#" class="btn btn-outline-danger" onclick="confirmarEliminacion('{{personaTemporal.id}}')">
                         <i class="fa fa-trash"></i>
                     </a>
                     <script>
@@ -56,7 +56,7 @@
                             cancelButtonText: 'Cancelar'
                             }).then((result) => {
                             if (result.isConfirmed) {
-                                window.location.href = `eliminarEmpleado/${id}`;
+                                window.location.href = `eliminarPersona/${id}`;
                             }
                             });
                         }
@@ -67,7 +67,7 @@
     </tbody>
 </table>
 <div class="text-center ">
-    <a href="nuevoEmpleado" class="btn btn-primary " >
+    <a href="nuevapersona" class="btn btn-primary " >
         Agregar Empleado
     </a>
 </div>
