@@ -11,8 +11,14 @@ from .models import Adopcion
 
 def index(request):
     adopciones = Adopcion.objects.select_related("mascota", "persona").all()
+    # Agregar las listas de mascotas y personas para el modal
+    mascotas = Mascota.objects.all().order_by("nombre")
+    personas = Persona.objects.filter(activo=True).order_by("nombres")
+    
     context = {
         "adopciones": adopciones,
+        "mascotas": mascotas,  # Para el modal de edición
+        "personas": personas,  # Para el modal de edición
     }
     return render(request, "adopcion.html", context)  
 
@@ -80,7 +86,7 @@ def editar_adopcion(request, adopcion_id):
         "mascotas": mascotas,
         "personas": personas,
     }
-    return render(request, "agregaradopcion.html", context)  # Cambiado: sin "Adopcion/"
+    return render(request, "agregaradopcion.html", context)
 
 def actualizar_adopcion(request, adopcion_id):
     adopcion = get_object_or_404(Adopcion, id=adopcion_id)

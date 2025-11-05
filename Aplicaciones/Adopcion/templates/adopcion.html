@@ -65,6 +65,7 @@
                         <i class="fa fa-trash"></i>
                     </a>
 
+                    <!-- Modal de Edición -->
                     <div class="modal fade" id="modalEditar{{ adopcionTemporal.id }}" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered">
                             <div class="modal-content">
@@ -80,7 +81,7 @@
                                             <label class="form-label" for="mascota{{ adopcionTemporal.id }}">Pet</label>
                                             <select class="form-select" name="mascota" id="mascota{{ adopcionTemporal.id }}" required>
                                                 <option value="" disabled>Select a pet</option>
-                                                {% for mascota in adopcionTemporal.mascota.get_queryset %}
+                                                {% for mascota in mascotas %}
                                                 <option value="{{ mascota.id }}" {% if mascota.id == adopcionTemporal.mascota_id %}selected{% endif %}>
                                                     {{ mascota.nombre }} - {{ mascota.especie.nombre }}
                                                 </option>
@@ -92,7 +93,7 @@
                                             <label class="form-label" for="persona{{ adopcionTemporal.id }}">Person</label>
                                             <select class="form-select" name="persona" id="persona{{ adopcionTemporal.id }}" required>
                                                 <option value="" disabled>Select a person</option>
-                                                {% for persona in adopcionTemporal.persona.get_queryset %}
+                                                {% for persona in personas %}
                                                 <option value="{{ persona.id }}" {% if persona.id == adopcionTemporal.persona_id %}selected{% endif %}>
                                                     {{ persona.nombres }} {{ persona.apellidos }} - {{ persona.numero_identificacion }}
                                                 </option>
