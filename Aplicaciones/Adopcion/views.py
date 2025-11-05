@@ -14,7 +14,7 @@ def index(request):
     context = {
         "adopciones": adopciones,
     }
-    return render(request, "Adopcion/adopcion.html", context)
+    return render(request, "adopcion.html", context)  
 
 def nueva_adopcion(request):
     mascotas = Mascota.objects.filter(adoptantes__isnull=True).order_by("nombre")
@@ -23,7 +23,7 @@ def nueva_adopcion(request):
         "mascotas": mascotas,
         "personas": personas,
     }
-    return render(request, "Adopcion/agregaradopcion.html", context)
+    return render(request, "agregaradopcion.html", context)  
 
 def guardar_adopcion(request):
     if request.method == "POST":
@@ -45,7 +45,6 @@ def guardar_adopcion(request):
             messages.error(request, "Selected pet or person does not exist.")
             return redirect("nuevaAdopcion")
 
-        # Check if adoption already exists
         if Adopcion.objects.filter(mascota=mascota, persona=persona).exists():
             messages.error(request, "This adoption process already exists for the selected pet and person.")
             return redirect("nuevaAdopcion")
@@ -81,7 +80,7 @@ def editar_adopcion(request, adopcion_id):
         "mascotas": mascotas,
         "personas": personas,
     }
-    return render(request, "Adopcion/agregaradopcion.html", context)
+    return render(request, "agregaradopcion.html", context)  # Cambiado: sin "Adopcion/"
 
 def actualizar_adopcion(request, adopcion_id):
     adopcion = get_object_or_404(Adopcion, id=adopcion_id)
@@ -101,7 +100,6 @@ def actualizar_adopcion(request, adopcion_id):
             messages.error(request, "Selected pet or person does not exist.")
             return redirect("editarAdopcion", adopcion_id=adopcion_id)
 
-        # Check if adoption already exists for other record
         if Adopcion.objects.filter(mascota=mascota, persona=persona).exclude(id=adopcion_id).exists():
             messages.error(request, "This adoption process already exists for another record.")
             return redirect("editarAdopcion", adopcion_id=adopcion_id)
