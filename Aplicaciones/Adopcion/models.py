@@ -15,7 +15,7 @@ class Adopcion(models.Model):
         related_name="adopciones",
     )
     estado = models.CharField(
-        max_length=15,
+        max_length=15, default="Activo",
     )
     fecha_solicitud = models.DateField(auto_now_add=True)
     fecha_resolucion = models.DateField(null=True, blank=True)

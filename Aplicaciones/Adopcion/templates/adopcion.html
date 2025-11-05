@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<br>
+<h1 class="text-center">Adoption Processes</h1>
+<div class="text-center">
+    <a href="{% url 'nuevaAdopcion' %}" class="btn btn-primary">
+        <i class="fa fa-heart me-1"></i> New Adoption Process
+    </a>
+</div>
+<hr>
+<div class="table-responsive" style="width: 90%; height: auto; overflow-x: auto; margin: auto;">
+    <table class="table table-bordered table-striped table-hover" id="table-adopcion">
+        <thead>
+            <tr class="table-success text-center">
+                <th>ID</th>
+                <th>Pet</th>
+                <th>Person</th>
+                <th>Status</th>
+                <th>Request Date</th>
+                <th>Resolution Date</th>
+                <th>Observations</th>
+                <th>Adoption Document</th>
+                <th>Creation Date</th>
+                <th>Update Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if adopciones %}
+            {% for adopcionTemporal in adopciones %}
+            <tr>
+                <td>{{ adopcionTemporal.id }}</td>
+                <td>{{ adopcionTemporal.mascota.nombre }}</td>
+                <td>{{ adopcionTemporal.persona.nombres }} {{ adopcionTemporal.persona.apellidos }}</td>
+                <td>
+                    <span class="badge 
+                        {% if adopcionTemporal.estado == 'Activo' %}bg-success
+                        {% elif adopcionTemporal.estado == 'Pendiente' %}bg-warning
+                        {% elif adopcionTemporal.estado == 'Aprobado' %}bg-primary
+                        {% elif adopcionTemporal.estado == 'Rechazado' %}bg-danger
+                        {% else %}bg-secondary{% endif %}">
+                        {{ adopcionTemporal.estado }}
+                    </span>
+                </td>
+                <td>{{ adopcionTemporal.fecha_solicitud|date:"Y-m-d" }}</td>
+                <td>{{ adopcionTemporal.fecha_resolucion|default_if_none:"-" }}</td>
+                <td>{{ adopcionTemporal.observaciones|default:"-"|truncatewords:10 }}</td>
+                <td class="text-center">
+                    {% if adopcionTemporal.documento_adopcion %}
+                    <a href="{{ adopcionTemporal.documento_adopcion.url }}" target="_blank" class="btn btn-outline-info btn-sm">
+                        <i class="fa fa-file-pdf"></i> View
+                    </a>
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+                <td>{{ adopcionTemporal.fecha_creacion|date:"Y-m-d H:i" }}</td>
+                <td>{{ adopcionTemporal.fecha_actualizacion|date:"Y-m-d H:i" }}</td>
+                <td class="text-center">
+                    <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#modalEditar{{ adopcionTemporal.id }}">
+                        <i class="fa fa-pen"></i>
+                    </button>
+                    <a href="#" class="btn btn-outline-danger" onclick="confirmarEliminacion('{{ adopcionTemporal.id }}')">
+                        <i class="fa fa-trash"></i>
+                    </a>
+
+                    <!-- Modal para editar -->
+                    <div class="modal fade" id="modalEditar{{ adopcionTemporal.id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header bg-warning text-dark">
+                                    <h5 class="modal-title">Edit Adoption Process</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{% url 'actualizarAdopcion' adopcionTemporal.id %}" method="post" enctype="multipart/form-data" class="form-adopcion">
+                                        {% csrf_token %}
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label" for="mascota{{ adopcionTemporal.id }}">Pet</label>
+                                            <select class="form-select" name="mascota" id="mascota{{ adopcionTemporal.id }}" required>
+                                                <option value="" disabled>Select a pet</option>
+                                                {% for mascota in adopcionTemporal.mascota.get_queryset %}
+                                                <option value="{{ mascota.id }}" {% if mascota.id == adopcionTemporal.mascota_id %}selected{% endif %}>
+                                                    {{ mascota.nombre }} - {{ mascota.especie.nombre }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label" for="persona{{ adopcionTemporal.id }}">Person</label>
+                                            <select class="form-select" name="persona" id="persona{{ adopcionTemporal.id }}" required>
+                                                <option value="" disabled>Select a person</option>
+                                                {% for persona in adopcionTemporal.persona.get_queryset %}
+                                                <option value="{{ persona.id }}" {% if persona.id == adopcionTemporal.persona_id %}selected{% endif %}>
+                                                    {{ persona.nombres }} {{ persona.apellidos }} - {{ persona.numero_identificacion }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label" for="estado{{ adopcionTemporal.id }}">Status</label>
+                                            <select class="form-select" name="estado" id="estado{{ adopcionTemporal.id }}" required>
+                                                <option value="Activo" {% if adopcionTemporal.estado == "Activo" %}selected{% endif %}>Active</option>
+                                                <option value="Pendiente" {% if adopcionTemporal.estado == "Pendiente" %}selected{% endif %}>Pending</option>
+                                                <option value="Aprobado" {% if adopcionTemporal.estado == "Aprobado" %}selected{% endif %}>Approved</option>
+                                                <option value="Rechazado" {% if adopcionTemporal.estado == "Rechazado" %}selected{% endif %}>Rejected</option>
+                                                <option value="Completado" {% if adopcionTemporal.estado == "Completado" %}selected{% endif %}>Completed</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label" for="fecha_resolucion{{ adopcionTemporal.id }}">Resolution Date</label>
+                                            <input class="form-control" type="date" name="fecha_resolucion" id="fecha_resolucion{{ adopcionTemporal.id }}" 
+                                                value="{{ adopcionTemporal.fecha_resolucion|date:'Y-m-d' }}">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label" for="observaciones{{ adopcionTemporal.id }}">Observations</label>
+                                            <textarea class="form-control" name="observaciones" id="observaciones{{ adopcionTemporal.id }}" 
+                                                rows="3">{{ adopcionTemporal.observaciones }}</textarea>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label" for="documento_adopcion{{ adopcionTemporal.id }}">Adoption Document (PDF)</label>
+                                            <input class="form-control" type="file" name="documento_adopcion" id="documento_adopcion{{ adopcionTemporal.id }}" 
+                                                accept=".pdf">
+                                            {% if adopcionTemporal.documento_adopcion %}
+                                            <div class="mt-2">
+                                                <small class="text-muted">Current file: 
+                                                    <a href="{{ adopcionTemporal.documento_adopcion.url }}" target="_blank">
+                                                        {{ adopcionTemporal.documento_adopcion.name }}
+                                                    </a>
+                                                </small>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="d-flex justify-content-end">
+                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                                <i class="fa fa-times me-1"></i> Cancel
+                                            </button>
+                                            <button type="submit" class="btn btn-success ms-2">
+                                                <i class="fa fa-save me-1"></i> Save Changes
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="11" class="text-center">No adoption processes registered.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function confirmarEliminacion(id) {
+    Swal.fire({
+        title: 'Are you sure you want to delete it?',
+        text: 'This action cannot be undone!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'eliminar-adopcion/' + id;
+        }
+    });
+}
+
+$(function () {
+    $('#table-adopcion').DataTable({
+        responsive: true,
+        dom: 'lBfrtip',
+        buttons: [
+            { extend: 'copy', text: '<i class="fa fa-copy"></i> Copy' },
+            { extend: 'csv', text: '<i class="fa fa-file-csv"></i> CSV' },
+            { extend: 'excel', text: '<i class="fa fa-file-excel"></i> Excel' },
+            { extend: 'pdf', text: '<i class="fa fa-file-pdf"></i> PDF' },
+            { extend: 'print', text: '<i class="fa fa-print"></i> Print' }
+        ],
+        language: {
+            url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+        },
+        lengthMenu: [
+            [5, 10, 25, 50, 100, -1],
+            [5, 10, 25, 50, 100, "All"]
+        ],
+        pageLength: 10
+    });
+
+    // Validación para formularios de edición en modales
+    $('.form-adopcion').each(function() {
+        $(this).validate({
+            ignore: [],
+            rules: {
+                mascota: {
+                    required: true
+                },
+                persona: {
+                    required: true
+                },
+                estado: {
+                    required: true
+                },
+                documento_adopcion: {
+                    extension: "pdf"
+                }
+            },
+            messages: {
+                mascota: {
+                    required: "Please select a pet."
+                },
+                persona: {
+                    required: "Please select a person."
+                },
+                estado: {
+                    required: "Please select a status."
+                },
+                documento_adopcion: {
+                    extension: "Only PDF files are allowed."
+                }
+            },
+            errorElement: 'div',
+            errorClass: 'error',
+            errorPlacement: function (error, element) {
+                error.insertAfter(element);
+            },
+            highlight: function (element) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element) {
+                $(element).removeClass('is-invalid');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
