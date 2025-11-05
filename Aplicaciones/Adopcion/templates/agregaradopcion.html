@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2 class="mb-0">
+                        {% if adopcion %}Edit Adoption Process{% else %}New Adoption Process{% endif %}
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form id="form-adopcion" action="{% if adopcion %}{% url 'actualizarAdopcion' adopcion.id %}{% else %}{% url 'guardarAdopcion' %}{% endif %}" 
+                          method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label" for="mascota">Pet</label>
+                            <select class="form-select" name="mascota" id="mascota" required>
+                                <option value="" selected disabled>Select a pet</option>
+                                {% for mascota in mascotas %}
+                                <option value="{{ mascota.id }}" 
+                                    {% if adopcion and adopcion.mascota_id == mascota.id %}selected{% endif %}>
+                                    {{ mascota.nombre }} - {{ mascota.especie.nombre }} 
+                                    {% if mascota.raza %}({{ mascota.raza.nombre }}){% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="persona">Person</label>
+                            <select class="form-select" name="persona" id="persona" required>
+                                <option value="" selected disabled>Select a person</option>
+                                {% for persona in personas %}
+                                <option value="{{ persona.id }}" 
+                                    {% if adopcion and adopcion.persona_id == persona.id %}selected{% endif %}>
+                                    {{ persona.nombres }} {{ persona.apellidos }} - {{ persona.numero_identificacion }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="estado">Status</label>
+                            <select class="form-select" name="estado" id="estado" required>
+                                <option value="Activo" {% if adopcion and adopcion.estado == "Activo" %}selected{% endif %}>Active</option>
+                                <option value="Pendiente" {% if adopcion and adopcion.estado == "Pendiente" %}selected{% endif %}>Pending</option>
+                                <option value="Aprobado" {% if adopcion and adopcion.estado == "Aprobado" %}selected{% endif %}>Approved</option>
+                                <option value="Rechazado" {% if adopcion and adopcion.estado == "Rechazado" %}selected{% endif %}>Rejected</option>
+                                <option value="Completado" {% if adopcion and adopcion.estado == "Completado" %}selected{% endif %}>Completed</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="fecha_resolucion">Resolution Date</label>
+                            <input class="form-control" type="date" name="fecha_resolucion" id="fecha_resolucion" 
+                                value="{% if adopcion %}{{ adopcion.fecha_resolucion|date:'Y-m-d' }}{% endif %}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="observaciones">Observations</label>
+                            <textarea class="form-control" name="observaciones" id="observaciones" rows="4">{% if adopcion %}{{ adopcion.observaciones }}{% endif %}</textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label" for="documento_adopcion">Adoption Document (PDF)</label>
+                            <input class="form-control" type="file" name="documento_adopcion" id="documento_adopcion" 
+                                accept=".pdf" {% if not adopcion %}required{% endif %}>
+                            {% if adopcion and adopcion.documento_adopcion %}
+                            <div class="mt-2">
+                                <small class="text-muted">Current file: 
+                                    <a href="{{ adopcion.documento_adopcion.url }}" target="_blank">
+                                        {{ adopcion.documento_adopcion.name }}
+                                    </a>
+                                </small>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-success" type="submit">
+                                <i class="fa fa-save me-1"></i> 
+                                {% if adopcion %}Update{% else %}Save{% endif %}
+                            </button>
+                            <a class="btn btn-outline-danger" href="{% url 'indexAdopcion' %}">
+                                <i class="fa fa-times me-1"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(function () {
+    const today = new Date().toISOString().split('T')[0];
+    $('#fecha_resolucion').attr('max', today);
+
+    $('#form-adopcion').validate({
+        ignore: [],
+        rules: {
+            mascota: {
+                required: true
+            },
+            persona: {
+                required: true
+            },
+            estado: {
+                required: true
+            },
+            documento_adopcion: {
+                {% if not adopcion %}required: true,{% endif %}
+                extension: "pdf"
+            }
+        },
+        messages: {
+            mascota: {
+                required: "Please select a pet."
+            },
+            persona: {
+                required: "Please select a person."
+            },
+            estado: {
+                required: "Please select a status."
+            },
+            documento_adopcion: {
+                {% if not adopcion %}required: "Please upload the adoption document.",{% endif %}
+                extension: "Only PDF files are allowed."
+            }
+        },
+        errorElement: 'div',
+        errorClass: 'error',
+        errorPlacement: function (error, element) {
+            if (element.prop('type') === 'file') {
+                error.insertAfter(element.parent());
+            } else {
+                error.insertAfter(element);
+            }
+        },
+        highlight: function (element) {
+            $(element).addClass('error');
+        },
+        unhighlight: function (element) {
+            $(element).removeClass('error');
+        }
+    });
+});
+</script>
+{% endblock %}
