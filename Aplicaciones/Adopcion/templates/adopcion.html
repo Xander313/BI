@@ -65,7 +65,6 @@
                         <i class="fa fa-trash"></i>
                     </a>
 
-                    <!-- Modal para editar -->
                     <div class="modal fade" id="modalEditar{{ adopcionTemporal.id }}" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered">
                             <div class="modal-content">
@@ -203,7 +202,6 @@ $(function () {
         pageLength: 10
     });
 
-    // Validación para formularios de edición en modales
     $('.form-adopcion').each(function() {
         $(this).validate({
             ignore: [],

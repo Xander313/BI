@@ -67,7 +67,7 @@
                         <div class="mb-4">
                             <label class="form-label" for="documento_adopcion">Adoption Document (PDF)</label>
                             <input class="form-control" type="file" name="documento_adopcion" id="documento_adopcion" 
-                                accept=".pdf" {% if not adopcion %}required{% endif %}>
+                                 {% if not adopcion %}required{% endif %}>
                             {% if adopcion and adopcion.documento_adopcion %}
                             <div class="mt-2">
                                 <small class="text-muted">Current file: 
