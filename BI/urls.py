@@ -26,6 +26,7 @@ urlpatterns = [
     path('breeds/', include('Aplicaciones.Raza.urls')),
     path('',include('Aplicaciones.Persona.urls')),
     path('adopciones/', include('Aplicaciones.Adopcion.urls')),
+    path('', include('Aplicaciones.Reportes.urls')),
 
 ]
 

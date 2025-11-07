@@ -1,0 +1,346 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Panel de reportes</h1>
+            <p class="text-muted mb-0">Top 5 de adopciones por especie y raza, persona destacada y eficiencia del proceso.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Persona con más adopciones</h2>
+                    {% if top_person %}
+                        <p class="fs-5 mb-1">{{ top_person.name }}</p>
+                        <p class="text-muted mb-0">Adopciones completadas: <strong>{{ top_person.count }}</strong></p>
+                    {% else %}
+                        <p class="text-muted mb-0">Aún no hay adopciones registradas.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Especies más adoptadas</h2>
+                    <canvas id="speciesChart" height="280"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Razas más adoptadas</h2>
+                    <canvas id="breedsChart" height="280"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Tiempo promedio para completar adopción</h2>
+                    <canvas id="avgAdoptionChart" height="220"></canvas>
+                    {% if avg_adoption_days is not None %}
+                        <p class="text-muted mt-3 mb-0">
+                            Promedio actual: <strong>{{ avg_adoption_days }} días</strong>
+                        </p>
+                    {% else %}
+                        <p class="text-muted mt-3 mb-0">Aún no hay adopciones resueltas para calcular el promedio.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Distribución de procesos por estado</h2>
+                    <canvas id="statusChart" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Solicitudes de adopción por mes</h2>
+                    <canvas id="monthlyChart" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ species_chart|json_script:"species-chart-data" }}
+{{ breeds_chart|json_script:"breeds-chart-data" }}
+{{ avg_duration_chart|json_script:"avg-adoption-data" }}
+{{ status_chart|json_script:"status-chart-data" }}
+{{ monthly_chart|json_script:"monthly-chart-data" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
+<script>
+    (function () {
+        const palette = [
+            '#2563eb','#16a34a','#f97316','#ec4899','#facc15',
+            '#1d4ed8','#22d3ee','#a855f7','#ef4444','#14b8a6'
+        ];
+        let speciesChartInstance = null;
+        let breedsChartInstance = null;
+        let avgAdoptionChartInstance = null;
+        let statusChartInstance = null;
+        let monthlyChartInstance = null;
+
+        function readJSONData(scriptId, fallbackValue) {
+            const scriptElement = document.getElementById(scriptId);
+            if (!scriptElement) {
+                return fallbackValue;
+            }
+            try {
+                return JSON.parse(scriptElement.textContent);
+            } catch (error) {
+                console.error(`No se pudo parsear el JSON para ${scriptId}`, error);
+                return fallbackValue;
+            }
+        }
+
+        function readPieChartData(scriptId) {
+            const parsed = readJSONData(scriptId, { labels: [], counts: [] }) || {};
+            return {
+                labels: parsed.labels || [],
+                counts: parsed.counts || [],
+            };
+        }
+
+        function replaceCanvasWithMessage(canvas, message) {
+            const replacement = document.createElement('p');
+            replacement.className = 'text-muted mb-0';
+            replacement.textContent = message;
+            canvas.replaceWith(replacement);
+        }
+
+        function renderPieChart(canvasId, data, emptyMessage) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) {
+                return;
+            }
+
+            if (!data.labels.length || !data.counts.length) {
+                replaceCanvasWithMessage(canvas, emptyMessage);
+                return;
+            }
+
+            const chartColors = palette.slice(0, data.labels.length);
+
+            const chartInstance = new Chart(canvas, {
+                type: 'pie',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.counts,
+                        backgroundColor: chartColors,
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const total = data.counts.reduce((acc, value) => acc + value, 0);
+                                    const value = context.parsed;
+                                    const percentage = total ? ((value / total) * 100).toFixed(1) : 0;
+                                    return `${context.label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            return chartInstance;
+        }
+
+        function renderAverageAdoptionChart(canvasId, data) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) {
+                return;
+            }
+
+            if (!data || data.average == null) {
+                replaceCanvasWithMessage(canvas, 'No hay datos suficientes para calcular el promedio.');
+                return;
+            }
+
+            const averageValue = Number(data.average);
+
+            const datasets = [
+                {
+                    label: 'Días promedio',
+                    data: [averageValue],
+                    backgroundColor: '#2563eb',
+                    borderRadius: 6,
+                    maxBarThickness: 40,
+                },
+            ];
+
+            return new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: [''],
+                    datasets,
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.dataset.label}: ${context.parsed.x} días`,
+                            },
+                        },
+                    },
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Días',
+                            },
+                        },
+                        y: {
+                            grid: {
+                                display: false,
+                            },
+                        },
+                    },
+                },
+            });
+        }
+
+        function renderLineChart(canvasId, data, emptyMessage) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) {
+                return;
+            }
+
+            if (
+                !data ||
+                !Array.isArray(data.labels) ||
+                !data.labels.length ||
+                !Array.isArray(data.counts) ||
+                !data.counts.length
+            ) {
+                replaceCanvasWithMessage(canvas, emptyMessage);
+                return;
+            }
+
+            return new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Adopciones',
+                        data: data.counts,
+                        tension: 0.3,
+                        borderColor: '#16a34a',
+                        backgroundColor: 'rgba(22, 163, 74, 0.2)',
+                        fill: true,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#16a34a',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.parsed.y} adopciones`,
+                            },
+                        },
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                            },
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0,
+                            },
+                        },
+                    },
+                },
+            });
+        }
+
+        function initCharts() {
+            const speciesData = readPieChartData('species-chart-data');
+            const breedsData = readPieChartData('breeds-chart-data');
+            const avgData = readJSONData('avg-adoption-data', null);
+            const statusData = readPieChartData('status-chart-data');
+            const monthlyData = readJSONData('monthly-chart-data', { labels: [], counts: [] });
+
+            if (speciesChartInstance) {
+                speciesChartInstance.destroy();
+            }
+            if (breedsChartInstance) {
+                breedsChartInstance.destroy();
+            }
+            if (avgAdoptionChartInstance) {
+                avgAdoptionChartInstance.destroy();
+            }
+            if (statusChartInstance) {
+                statusChartInstance.destroy();
+            }
+            if (monthlyChartInstance) {
+                monthlyChartInstance.destroy();
+            }
+
+            speciesChartInstance = renderPieChart(
+                'speciesChart',
+                speciesData,
+                'No hay adopciones registradas por especie.'
+            );
+            breedsChartInstance = renderPieChart(
+                'breedsChart',
+                breedsData,
+                'No hay adopciones registradas por raza.'
+            );
+            avgAdoptionChartInstance = renderAverageAdoptionChart(
+                'avgAdoptionChart',
+                avgData
+            );
+            statusChartInstance = renderPieChart(
+                'statusChart',
+                statusData,
+                'No hay procesos de adopción registrados.'
+            );
+            monthlyChartInstance = renderLineChart(
+                'monthlyChart',
+                monthlyData,
+                'No hay solicitudes recientes registradas.'
+            );
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCharts);
+        } else {
+            initCharts();
+        }
+    })();
+</script>
+{% endblock %}
